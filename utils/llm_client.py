@@ -383,6 +383,9 @@ class LLMClient:
         if max_tokens is not None:
             params["max_tokens"] = max_tokens
 
+        if self.model.startswith("openai/gpt-oss-"):
+            params["reasoning_effort"] = "low"
+
         params.update(kwargs)
 
         response = self.client.chat.completions.create(**params)
