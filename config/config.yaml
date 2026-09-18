@@ -52,3 +52,32 @@ defaults:
     creative:
       temperature: 1.0
       max_tokens: 2000
+
+
+classification:
+  districts:
+    - Ampara
+    - Anuradhapura
+    - Badulla
+    - Batticaloa
+    - Colombo
+    - Galle
+    - Gampaha
+    - Hambantota
+    - Jaffna
+    - Kalutara
+    - Kandy
+    - Kegalle
+    - Kilinochchi
+    - Kurunegala
+    - Mannar
+    - Matale
+    - Matara
+    - Monaragala
+    - Mullaitivu
+    - Nuwara Eliya
+    - Polonnaruwa
+    - Puttalam
+    - Ratnapura
+    - Trincomalee
+    - Vavuniya

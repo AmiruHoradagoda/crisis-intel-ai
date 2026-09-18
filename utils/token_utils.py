@@ -110,7 +110,7 @@ def reconcile_usage(
         "total_est": estimate.get("estimated_total", 0),
         "prompt_tokens_actual": None,
         "completion_tokens_actual": None,
-        "total_tokens_actual": None,
+        "total_tokens_actual":  provider_usage.get("totalTokenCount"),
     }
 
     if provider_usage:
@@ -133,107 +133,3 @@ def reconcile_usage(
 
     return result
 
-
-def estimate_prompt_tokens(
-    messages: list[dict[str, str]],
-    provider: Literal["openai", "google", "groq"],
-    model: str,
-    context_strs: Optional[list[str]] = None,
-) -> int:
-    """
-    Quick estimate of prompt tokens (input + context).
-
-    Args:
-        messages: Messages array
-        provider: API provider
-        model: Model identifier
-        context_strs: Optional context strings
-
-    Returns:
-        Estimated prompt token count
-    """
-    counts = count_messages_tokens(messages, provider, model, context_strs)
-    return counts["estimated_total"]
-
-
-def fit_within_context(
-    messages: list[dict[str, str]],
-    provider: Literal["openai", "google", "groq"],
-    model: str,
-    max_context_tokens: int,
-    context_strs: Optional[list[str]] = None,
-) -> tuple[list[dict[str, str]], Optional[list[str]], dict[str, Any]]:
-    """
-    Ensure messages + context fit within token budget.
-
-    Remove oldest non-system messages, then shorten the remaining content.
-
-    Args:
-        messages: Messages array
-        provider: API provider
-        model: Model identifier
-        max_context_tokens: Maximum allowed prompt tokens
-        context_strs: Optional context strings
-
-    Returns:
-        Tuple of (adjusted_messages, adjusted_context, metadata_dict)
-    """
-    current_tokens = estimate_prompt_tokens(messages, provider, model, context_strs)
-
-    if current_tokens <= max_context_tokens:
-        return (
-            messages,
-            context_strs,
-            {"overflow": False, "original_tokens": current_tokens},
-        )
-
-    # Remove oldest messages (keep system message if present)
-    adjusted = messages.copy()
-    system_msgs = [m for m in adjusted if m.get("role") == "system"]
-    other_msgs = [m for m in adjusted if m.get("role") != "system"]
-
-    # Truncate from the beginning, but always keep at least the last user message
-    while (
-        len(other_msgs) > 1
-        and estimate_prompt_tokens(
-            system_msgs + other_msgs, provider, model, context_strs
-        )
-        > max_context_tokens
-    ):
-        other_msgs.pop(0)
-
-    # If still over budget, truncate the content of the last message
-    if (
-        estimate_prompt_tokens(system_msgs + other_msgs, provider, model, context_strs)
-        > max_context_tokens
-        and other_msgs
-    ):
-        # Truncate the last message's content to fit
-        last_msg = other_msgs[-1]
-        enc = pick_encoding(provider, model)
-
-        # Calculate available tokens for content (accounting for overhead)
-        overhead = 4 * (len(system_msgs) + 1) + 3  # role overhead + base
-        available_tokens = max_context_tokens - overhead
-
-        # Encode and truncate
-        content = last_msg.get("content", "")
-        tokens = enc.encode(content, disallowed_special=())
-        if len(tokens) > available_tokens:
-            tokens = tokens[:available_tokens]
-            truncated_content = enc.decode(tokens)
-            other_msgs[-1] = {
-                **last_msg,
-                "content": truncated_content + "... [truncated]",
-            }
-
-    return (
-        system_msgs + other_msgs,
-        context_strs,
-        {
-            "overflow": True,
-            "original_tokens": current_tokens,
-            "strategy": "truncate",
-            "messages_removed": len(messages) - len(system_msgs) - len(other_msgs),
-        },
-    )

@@ -22,7 +22,6 @@ import os
 from .token_utils import (
     count_messages_tokens,
     reconcile_usage,
-    fit_within_context,
 )
 from .config_loader import get_default_temperature, get_default_max_tokens
 
@@ -155,25 +154,12 @@ class LLMClient:
         token_counts = count_messages_tokens(
             messages, self.provider, self.model, context_strs
         )
-
-        # Check hard prompt cap
-        overflow_handled = False
-        if (
-            self.hard_prompt_cap
+        if (self.hard_prompt_cap is not None 
             and token_counts["estimated_total"] > self.hard_prompt_cap
         ):
-            # Apply context-fit strategy
-            messages, context_strs, fit_meta = fit_within_context(
-                messages,
-                self.provider,
-                self.model,
-                self.hard_prompt_cap,
-                context_strs=context_strs,
-            )
-            overflow_handled = fit_meta.get("overflow", False)
-            # Recalculate after fitting
-            token_counts = count_messages_tokens(
-                messages, self.provider, self.model, context_strs
+            raise ValueError(
+            f"Estimated prompt size {token_counts['estimated_total']} "
+            f"exceeds the configured limit {self.hard_prompt_cap}."
             )
 
         # Retry loop
@@ -218,7 +204,6 @@ class LLMClient:
                     "meta": {
                         "retry_count": retry_count,
                         "backoff_ms_total": total_backoff_ms,
-                        "overflow_handled": overflow_handled,
                     },
                 }
 
@@ -240,7 +225,6 @@ class LLMClient:
                 if (
                     "context" in error_str
                     and ("length" in error_str or "too long" in error_str)
-                    and not overflow_handled
                 ):
                     raise ValueError(
                         "Context window exceeded. Shorten the messages or lower hard_prompt_cap."
@@ -309,14 +293,14 @@ class LLMClient:
         """Call Google Gemini API using new google-genai SDK."""
         # Convert OpenAI format to Gemini format
         gemini_contents = []
-        system_instruction = None
+        system_messages = []
 
         for msg in messages:
             role = msg["role"]
             content = msg["content"]
 
             if role == "system":
-                system_instruction = content
+                system_messages.append(content)
             elif role == "user":
                 gemini_contents.append(
                     types.Content(
@@ -336,8 +320,8 @@ class LLMClient:
             config_params["temperature"] = temperature
         if max_tokens is not None:
             config_params["max_output_tokens"] = max_tokens
-        if system_instruction:
-            config_params["system_instruction"] = system_instruction
+        if system_messages:
+            config_params["system_instruction"] = "\n\n".join(system_messages)
 
         config_params.update(kwargs)
         generation_config = (
@@ -357,6 +341,7 @@ class LLMClient:
             usage = {
                 "promptTokenCount": response.usage_metadata.prompt_token_count,
                 "candidatesTokenCount": response.usage_metadata.candidates_token_count,
+                "totalTokenCount": response.usage_metadata.total_token_count,
             }
 
         return {

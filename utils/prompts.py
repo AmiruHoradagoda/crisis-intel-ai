@@ -69,7 +69,7 @@ def render(prompt_id: str, **vars) -> Tuple[str, PromptSpec]:
         )
 
     spec = PROMPTS[prompt_id]
-    text = Template(spec.template).safe_substitute(**vars)
+    text = Template(spec.template).substitute(**vars)
     return text, spec
 
 
