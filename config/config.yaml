@@ -12,6 +12,23 @@ providers:
 
   default: openai
 
+
+# ============================================================================
+# Model Selection 
+# ============================================================================
+models:
+  # Auto-route reasoning techniques to reasoning models
+  auto_routing: true
+  
+  # Techniques that trigger reasoning model routing
+  reasoning_techniques:
+    - cot
+    - tot
+    - cot_reasoning
+    - tot_reasoning
+    - chain_of_thought
+    - tree_of_thought
+
 # ============================================================================
 # Default LLM Parameters
 # ============================================================================

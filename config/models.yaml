@@ -9,6 +9,6 @@ google:
   reason: gemini-2.5-pro
 
 groq:
-  general: llama-3.1-8b-instant
-  strong: llama-3.1-70b-versatile
-  reason: deepseek-r1-distill-llama-70b
+  general: openai/gpt-oss-20b
+  strong: openai/gpt-oss-120b
+  reason: openai/gpt-oss-120b
