@@ -9,7 +9,6 @@ class PromptSpec:
     id: str
     purpose: str
     template: str
-    stop: Optional[List[str]] = None
     max_tokens: Optional[int] = None
     temperature: Optional[float] = None
 
@@ -38,7 +37,7 @@ PROMPTS: Dict[str, PromptSpec] = {
             "Output format: ${format}\n"
         ),
         temperature=0.2,
-    )
+    ),
 }
 
 
@@ -82,22 +81,3 @@ def list_prompts() -> List[str]:
         List of prompt identifiers
     """
     return list(PROMPTS.keys())
-
-
-def get_prompt_info(prompt_id: str) -> PromptSpec:
-    """
-    Get metadata for a prompt without rendering.
-
-    Args:
-        prompt_id: Prompt identifier
-
-    Returns:
-        PromptSpec instance
-
-    Raises:
-        KeyError: If prompt_id not found
-    """
-    if prompt_id not in PROMPTS:
-        raise KeyError(f"Prompt '{prompt_id}' not found")
-    return PROMPTS[prompt_id]
-

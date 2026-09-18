@@ -1,26 +1,20 @@
 # ============================================================================
-# API Providers
-# ============================================================================
-providers:
-  enabled:
-    - openai
-    - google
-    - groq
-  
-  disabled:
-    - anthropic
-
-  default: openai
-
-
-# ============================================================================
-# Model Selection 
+# Model Selection
 # ============================================================================
 models:
   # Auto-route reasoning techniques to reasoning models
   auto_routing: true
-  
-  # Techniques that trigger reasoning model routing
+
+  general_techniques:
+    - general
+    - zero_shot
+    - few_shot
+
+  strong_techniques:
+    - strong
+    - complex
+    - advanced
+
   reasoning_techniques:
     - cot
     - tot
@@ -29,32 +23,32 @@ models:
     - chain_of_thought
     - tree_of_thought
 
+
 # ============================================================================
 # Default LLM Parameters
 # ============================================================================
 defaults:
   temperature: 0.2
   max_tokens: 1000
-  top_p: 1.0
-  
+
   # Parameter recommendations by task type
   by_task:
     extraction:
       temperature: 0.0
       max_tokens: 500
-    
+
     classification:
       temperature: 0.0
       max_tokens: 50
-    
+
     generation:
       temperature: 0.7
       max_tokens: 1500
-    
+
     reasoning:
       temperature: 0.3
       max_tokens: 2000
-    
+
     creative:
       temperature: 1.0
       max_tokens: 2000

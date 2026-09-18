@@ -56,3 +56,4 @@ htmlcov/
 *.whl
 *.tar.gz
 
+~$*.xlsx
