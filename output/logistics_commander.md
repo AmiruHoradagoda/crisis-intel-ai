@@ -31,7 +31,7 @@ Age Bonus: 2
 Rescue Bonus: 0  
 Medicine Bonus: 1  
 Final Priority Score: 8  
-Reason: The victim is 75 years old (adds 2 points), the main need is insulin (a medication, adds 1 point), and the need is not classified as “Rescue” (no rescue bonus).
+Reason: The victim is 75 years old (adds age bonus), the main need is insulin (medicine) not rescue, and medication is required, giving the additional medicine bonus.
 
 ### Incident 3
 
@@ -51,43 +51,40 @@ Reason: The incident has a base score of 5, qualifies for the rescue bonus (+3) 
 ## Part B - ToT Rescue Strategy
 
 **Branch 1 – Highest Score First**  
-Service Order: Incident 3 (Ragama) → Incident 2 (Ja‑Ela) → Incident 1 (Gampaha)  
-Known Travel Time: 0 min (Ragama) + 10 min (Ragama → Ja‑Ela) + 40 min (Ja‑Ela → Gampaha) = **50 minutes**  
-Reasoning: Both Incident 2 and Incident 3 have the top priority score (8). Using the only explicit travel times as a tie‑breaker, the Ragama incident (0 min) is reached before Ja‑Ela (10 min). After serving Ragama, the boat proceeds to Ja‑Ela (10 min) and then to Gampaha (40 min). This order maximises priority coverage while keeping travel times known.
-
----
+Service Order: Ragama → Ja‑Ela → Gampaha  
+Known Travel Time: 0 min (Ragama→Ragama) + 10 min (Ragama→Ja‑Ela) + 40 min (Ja‑Ela→Gampaha) = **50 minutes**  
+Reasoning: Both Ragama and Ja‑Ela have the highest priority (8). The tie‑breaker uses the explicit travel time from the start; Ragama is 0 min away, Ja‑Ela is 10 min away, so Ragama is served first. After that the only known leg to the remaining incident is Ja‑Ela → Gampaha (40 min).  
 
 **Branch 2 – Closest First**  
-Service Order: Incident 3 (Ragama) → Incident 2 (Ja‑Ela) → Incident 1 (Gampaha)  
-Known Travel Time: 0 min (Ragama) + 10 min (Ragama → Ja‑Ela) + 40 min (Ja‑Ela → Gampaha) = **50 minutes**  
-Reasoning: Starting at Ragama, the nearest incident is the Ragama incident itself (0 min). The next nearest location, using the only provided travel legs, is Ja‑Ela (10 min). The remaining incident, Gampaha, is reached from Ja‑Ela in 40 min. The route is identical to Branch 1 because the “closest” rule leads to the same sequence.
-
----
+Service Order: Ragama → Ja‑Ela → Gampaha  
+Known Travel Time: 0 min (Ragama→Ragama) + 10 min (Ragama→Ja‑Ela) + 40 min (Ja‑Ela→Gampaha) = **50 minutes**  
+Reasoning: Starting at Ragama, the nearest incident is the one at the same location (0 min). The next nearest, using only the provided travel times, is Ja‑Ela (10 min). The only remaining known leg is Ja‑Ela → Gampaha (40 min).  
 
 **Branch 3 – Furthest First**  
-Service Order: Incident 1 (Gampaha) → Incident 2 (Ja‑Ela) → Incident 3 (Ragama)  
-Known Travel Time: Ragama → Gampaha = 10 min (Ragama → Ja‑Ela) + 40 min (Ja‑Ela → Gampaha) = **50 minutes**; subsequent legs **Unknown** (no travel times given from Gampaha to Ja‑Ela or Ragama).  
-Reasoning: From the start point, Gampaha is the furthest reachable location (50 min). After serving Gampaha, the boat would need to travel to Ja‑Ela and Ragama, but the directional travel times from Gampaha are not provided, so they are marked “Unknown”. This strategy delays high‑priority victims at Ragama and Ja‑Ela and introduces uncertainty for the remainder of the mission.
+Service Order: Gampaha → Ja‑Ela → Ragama  
+Known Travel Time: Ragama → Ja‑Ela (10 min) + Ja‑Ela → Gampaha (40 min) = **50 minutes** for the first leg; subsequent legs are **Unknown** (no directional times from Gampaha to Ja‑Ela or Ragama).  
+Reasoning: The furthest reachable incident, following the forward travel legs, is Gampaha (total 10 + 40 = 50 min from the start). The boat must pass through Ja‑Ela but does not automatically serve it. After completing Gampaha, the travel times back to Ja‑Ela or Ragama are not provided, so they are marked Unknown.  
 
----
+---  
 
-### Comparison
-- **Priority scores served early:**  
-  - Branch 1 & 2: Serve the highest‑score incidents (8) first (Ragama, then Ja‑Ela).  
-  - Branch 3: Serves a lower‑score incident (5) first, delaying both 8‑score incidents.  
+**Comparison**  
+- **Priority scores served early**:  
+  *Branch 1 & 2*: First serve Ragama (score 8), then Ja‑Ela (score 8), finally Gampaha (score 5).  
+  *Branch 3*: First serve Gampaha (score 5), delaying both 8‑score incidents.  
 
-- **Known travel times:**  
-  - Branch 1 & 2: All legs known, total 50 min.  
-  - Branch 3: Only the first leg (50 min) known; the rest are Unknown.  
+- **Known travel times**:  
+  *Branch 1 & 2*: Total known travel = 50 min (all legs known).  
+  *Branch 3*: Only the initial leg to Gampaha is known (50 min); the remaining legs are Unknown.  
 
-- **Speed to high‑priority victims:**  
-  - Branch 1 & 2 reach Ragama (0 min) and Ja‑Ela (10 min) quickly.  
-  - Branch 3 reaches the high‑priority Ja‑Ela and Ragama only after an unknown travel period.  
+- **Speed to high‑priority victims**:  
+  *Branch 1 & 2* reach both high‑priority (score 8) incidents within the first 10 min (Ragama) and 50 min total.  
+  *Branch 3* reaches the first high‑priority incident only after an unknown travel time from Gampaha, potentially much later.  
 
-- **Unknown travel times:**  
-  - Only Branch 3 has unknown segments (Gampaha → Ja‑Ela, Gampaha → Ragama).  
+- **Unknown travel times**: Present only in Branch 3 for the legs after Gampaha.  
 
-### Optimal Route
-**Selected Service Order:** Incident 3 (Ragama) → Incident 2 (Ja‑Ela) → Incident 1 (Gampaha)
+---  
 
-**Reason:** This route (identical in Branch 1 and Branch 2) uses only confirmed travel times, delivers aid to the two highest‑priority incidents (score 8) as quickly as possible, and avoids any unknown travel segments. It therefore maximises life‑saving impact while maintaining a fully known schedule.
+**Optimal Route**  
+Service Order: **Ragama → Ja‑Ela → Gampaha**  
+
+**Reason:** This route (identical in Branch 1 and Branch 2) serves both highest‑priority incidents (scores 8) as early as possible, uses only known travel times, and completes the mission with a total known travel time of 50 minutes. Branch 3 delays high‑priority care and introduces unknown travel segments, making it less suitable under the given constraints.
