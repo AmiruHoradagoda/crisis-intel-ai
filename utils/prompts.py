@@ -38,6 +38,19 @@ PROMPTS: Dict[str, PromptSpec] = {
         ),
         temperature=0.2,
     ),
+    "cot_reasoning.v1": PromptSpec(
+        id="cot_reasoning.v1",
+        purpose="Structured reasoning for complex crisis scenarios",
+        template=(
+            "You are ${role}.\n"
+            "Analyze the scenario carefully before giving the final recommendation.\n\n"
+            "Scenario:\n${query}\n\n"
+            "Task:\n${instruction}\n\n"
+            "Constraints:\n${constraints}\n\n"
+            "Output format:\n${format}\n"
+        ),
+        temperature=0.3,
+    ),
 }
 
 
