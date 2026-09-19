@@ -27,6 +27,19 @@ PROMPTS: Dict[str, PromptSpec] = {
     ),
     temperature=0.0,
     ),
+    "json_extract.v1": PromptSpec(
+    id="json_extract.v1",
+    purpose="Extract structured crisis-event data as JSON",
+    template=(
+        "You are ${role}.\n\n"
+        "Input:\n${query}\n\n"
+        "Task:\n${instruction}\n\n"
+        "Schema:\n${schema}\n\n"
+        "Constraints:\n${constraints}\n\n"
+        "Output format:\n${format}\n"
+    ),
+    temperature=0.0,
+    ),
     "zero_shot.v1": PromptSpec(
         id="zero_shot.v1",
         purpose="Direct instruction-first prompt",
