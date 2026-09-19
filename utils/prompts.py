@@ -51,6 +51,19 @@ PROMPTS: Dict[str, PromptSpec] = {
         ),
         temperature=0.3,
     ),
+    "tot_reasoning.v1": PromptSpec(
+    id="tot_reasoning.v1",
+    purpose="Explore and compare multiple rescue strategies",
+    template=(
+        "You are ${role}.\n"
+        "Explore the required strategy branches before selecting a final plan.\n\n"
+        "Problem:\n${query}\n\n"
+        "Task:\n${instruction}\n\n"
+        "Constraints:\n${constraints}\n\n"
+        "Output format:\n${format}\n"
+    ),
+    temperature=0.3,
+),
 }
 
 
