@@ -15,6 +15,18 @@ class PromptSpec:
 
 # Central prompt registry
 PROMPTS: Dict[str, PromptSpec] = {
+    "overflow_summarize.v1": PromptSpec(
+    id="overflow_summarize.v1",
+    purpose="Compress oversized messages while preserving essential information",
+    template=(
+        "You are ${role}.\n\n"
+        "Message:\n${query}\n\n"
+        "Task:\n${instruction}\n\n"
+        "Constraints:\n${constraints}\n\n"
+        "Output format:\n${format}\n"
+    ),
+    temperature=0.0,
+    ),
     "zero_shot.v1": PromptSpec(
         id="zero_shot.v1",
         purpose="Direct instruction-first prompt",
